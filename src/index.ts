@@ -14,6 +14,7 @@ interface MainConfig {
     class: number;
     note: number;
     interval: number;
+    output: string;
     debug: boolean;
 }
 
@@ -60,6 +61,14 @@ const paramDef = [
         type: parseDuration,
         require: false,
         defaultValue: 1000
+    },
+    {
+        name: 'output',
+        alias: 'o',
+        description: 'output directory',
+        type: String,
+        require: false,
+        defaultValue: "out"
     },
     {
         name: 'debug',
@@ -115,11 +124,11 @@ async function run(cfg: MainConfig): Promise<number> {
 
 
     if (page.url() == "https://loilonote.app/login") {
-        await take(page)
+        await take(page, cfg)
         await loginLoilo(page, cfg)
     }
 
-    await take(page)
+    await take(page, cfg)
 
     await page.goto(`https://loilonote.app/_/${cfg.class}/${cfg.note}`);
 
@@ -128,16 +137,16 @@ async function run(cfg: MainConfig): Promise<number> {
     }
 
     while (true) {
-        await take(page)
+        await take(page, cfg)
         await new Promise(resolve => setTimeout(resolve, cfg.interval))
     }
 
     return 0;
 }
 
-async function take(page: Page) {
-    if (!fs.existsSync("out"))
-        fs.mkdirSync("out")
+async function take(page: Page, cfg: MainConfig) {
+    if (!fs.existsSync(cfg.output))
+        fs.mkdirSync(cfg.output)
     const data = await page.screenshot();
     fs.writeFileSync(`out/${process.pid}_${dateformat(new Date, "yyyy-mm-dd-HH-MM-ss-l")}.png`, data)
 }
