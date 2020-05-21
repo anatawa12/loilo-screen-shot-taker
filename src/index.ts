@@ -14,6 +14,7 @@ interface MainConfig {
     class: number;
     note: number;
     interval: number;
+    output: string;
     debug: boolean;
 }
 
@@ -60,6 +61,14 @@ const paramDef = [
         type: parseDuration,
         require: false,
         defaultValue: 1000
+    },
+    {
+        name: 'output',
+        alias: 'o',
+        description: 'output directory',
+        type: String,
+        require: false,
+        defaultValue: "out"
     },
     {
         name: 'debug',
