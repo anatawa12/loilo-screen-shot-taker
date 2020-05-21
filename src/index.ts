@@ -62,6 +62,11 @@ const paramDef = [
         defaultValue: 1000
     },
     {
+        name: 'if-sharing',
+        description: 'take shots if screen was shard from teacher',
+        type: Boolean,
+    },
+    {
         name: 'debug',
         description: 'enable debug mode',
         type: Boolean,
@@ -81,7 +86,7 @@ const usage = [
 ];
 
 async function exec(): Promise<number> {
-    const cfg = commandLineArgs(paramDef) as MainConfig;
+    const cfg = commandLineArgs(paramDef, { camelCase: true }) as MainConfig;
 
     // Valid require params
     const requiresNotSetted = paramDef
