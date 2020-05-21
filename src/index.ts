@@ -15,6 +15,7 @@ interface MainConfig {
     note: number;
     interval: number;
     debug: boolean;
+    ifSharing: boolean;
 }
 
 const paramDef = [
@@ -120,11 +121,11 @@ async function run(cfg: MainConfig): Promise<number> {
 
 
     if (page.url() == "https://loilonote.app/login") {
-        await take(page)
+        await take(page, cfg)
         await loginLoilo(page, cfg)
     }
 
-    await take(page)
+    await take(page, cfg)
 
     await page.goto(`https://loilonote.app/_/${cfg.class}/${cfg.note}`);
 
@@ -133,14 +134,16 @@ async function run(cfg: MainConfig): Promise<number> {
     }
 
     while (true) {
-        await take(page)
+        await take(page, cfg)
         await new Promise(resolve => setTimeout(resolve, cfg.interval))
     }
 
     return 0;
 }
 
-async function take(page: Page) {
+async function take(page: Page, cfg: MainConfig) {
+    if (cfg.ifSharing && await page.$('.screenSharing') == null)
+        return
     if (!fs.existsSync("out"))
         fs.mkdirSync("out")
     const data = await page.screenshot();
